@@ -1,0 +1,360 @@
+
+{% extends 'myblog/base.html' %}
+{% load static %}
+{% block content %}
+{% load crispy_forms_tags %}
+    
+    <section class="py-5">
+      <div class="container py-4">
+        <div class="row text-center">
+          <div class="col-lg-8 mx-auto">
+
+         {% for object  in post_list  %}
+        <!-- Post delete/update-->
+          <div>
+                  <a href="{% url 'post_update' pk=post.pk %}">Update</a>
+                  <a href="{% url 'post_delete' pk=post.pk %}">Delete</a>
+          </div>
+
+            <a class="category-link mb-3 d-inline-block" href="#">{{object}}</a>
+            <h1>{{object.title}}</h1>
+            <p>{{objet.overview}}</p>
+            <ul class="list-inline mb-5">
+              <li class="list-inline-item mx-2"><a class="text-uppercase text-muted reset-anchor" href="#">{{object.author.user.username}}</a></li>
+              <li class="list-inline-item mx-2"><a class="text-uppercase text-muted reset-anchor" href="#">{{object.timestamp}}</a></li>
+            </ul>
+          </div>
+        </div><img class="w-100 mb-5" src="{{object.thumbnail.url}}" alt="...">
+        <div class="row">
+          <div class="col-lg-9">
+            <p class="lead drop-caps mb-5">{{object.overview}}</p>
+
+        {% endfor %} 
+             <br>
+             <br> 
+
+         
+
+            <!-- Post tags-->
+             <div class="d-flex align-items-center flex-column flex-sm-row mb-4 p-4 bg-light">
+              <h3 class="h4 mb-3 mb-sm-0">Tags</h3>
+              <ul class="list-inline mb-0 ml-0 ml-sm-3">
+              {% for tag in tags %}
+                <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">{{tag}}</a></li>
+              {% endfor %} 
+
+              <br>
+              <br>
+              
+              </ul>
+            </div>
+            <!-- Post share-->
+            <div class="d-flex align-items-center flex-column flex-sm-row mb-5 p-4 bg-light">
+              <h3 class="h4 mb-3 mb-sm-0">Share this post</h3>
+              <ul class="list-inline mb-0 ml-0 ml-sm-3">
+              {% for post in share %}
+              
+             
+                <li class="list-inline-item mr-1 my-1"><a class="social-link-share facebook" href="#"><i class="fab fa-facebook-f mr-2"></i>{{post}}</a></li>
+               {% endfor %}
+             
+              </ul>
+            </div>
+            <!-- Leave comment-->
+            {% if request.user.is_authenticated %}
+            <h3 class="h4 mb-4">Leave a comment</h3>
+            <form class="mb-5" action="." method="post">
+            {% csrf_token %}
+              <div class="row">
+                  <div class="form-group col-lg-12">
+                {{form }}
+                
+                  <button class="btn btn-primary" type="submit">Submit your comment</button>
+                </div>
+              </div>
+            </form> 
+            {% endif %}
+            <!-- Post comments-->
+            <h3 class="h4 mb-4">Post Comments<span class="no-of-comments">({{post.comments.count}})</span></h3>
+            {% comment %} <h3 class="h4 mb-4">Comments</h3> {% endcomment %}
+            {% for comment in post.get_comments %}
+            <ul class="list-unstyled comments">
+              <li>
+              {% if comment.user.author %}
+                <div class="media mb-4"><img class="rounded-circle shadow-sm   img-fluid" src="{{comment.user.author.profile_pic.url}}" alt="" width="60">
+              {% else %}
+              <div class="image"><img src="img/user.svg" alt="..." 
+              {% endif %} 
+              
+                     
+                  <div class="media-body ml-3">
+                    <p class="small mb-0 text-primary">{{comment.timestamp}}</p>
+                    <h5>{{comment.user.username}}</h5>
+                    <p class="text-muted text-small mb-2">{{comment.content}}
+                    </p>
+                    <a class="reset-anchor text-small" href="{{post.get_absolute_url}}"><i class="fas fa-share mr-2 text-primary"></i><strong>Reply</strong>
+                    </a>
+                  </div>
+                </div>
+               </div> 
+              </li>
+                {% endfor %}
+              </ul>  
+        
+            <!--end Post comments-->
+
+
+         <!-- Blog sidebar-->
+          <div class="col-lg-3">
+            <!-- About category-->
+            <h3 class="h4 mb-4">Featured Authors</h3>
+            <div class="card rounded-0 border-0 bg-light mb-4 py-lg-4">
+              <div class="card-body text-center">
+              {% for object  in post_list  %}
+                <h2 class="h3 mb-3">{{object.author.user.username}}</h2>
+                <img class="rounded-circle mb-3" src="{{object.author.profile_pic.url}}" alt="..." width="100">
+                <p class="text-small text-muted">{{object.overview}}</p>
+
+              {% endfor %}
+                <ul class="list-inline small mb-0 text-dark">
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-facebook-f"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-twitter"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-instagram"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-linkedin"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-youtube"></i></a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Recent posts-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+              
+                <h2 class="h5 mb-3">Recent posts</h2>
+                <div class="media mb-3">
+                {% for post in latest %}
+                <a class="d-block" href="{{post.get_absolute_url}}"><img class="img-fluid" src="{{post.thumbnail.url}}" alt="" width="70"></a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="{{post.get_absolute_url}}">{{post.title}}</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">{{post.overview}}</p>
+                    {% endfor %}
+                  </div> 
+                </div>
+                </div>
+
+            <!-- Tags-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+                <h2 class="h5 mb-3">Tags cloud</h2>
+                <ul class="list-inline">
+                {% for tag  in tags %}
+
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">{{tag}}</a></li>
+
+                {% endfor %}
+             </ul>
+              </div>
+            </div>
+            <!-- Ad-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0"><a class="d-block" href="#"><img class="img-fluid" src="img/banner.jpg" alt=""></a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+   
+{% endblock %}
+
+
+
+                {% comment %} <div class="form-group col-lg-6">
+                  <input class="form-control" type="text" name="name" placeholder="Full Name e.g. Jason Doe">
+                </div>
+                <div class="form-group col-lg-6">
+                  <input class="form-control" type="email" name="email" placeholder="Email Address e.g. Jason@email.com">
+                </div> {% endcomment %}
+                {% comment %} <div class="form-group col-lg-12">
+                
+                  <textarea class="form-control" name="message" rows="5" placeholder="Leave your message"></textarea>
+                </div> {% endcomment %}
+            
+              {% comment %} {% for object in post_list  %} 
+              
+                <div class="media mb-4"><img class="rounded-circle shadow-sm img-fluid" src="{{object.author.profile_pic.url}}" alt="" width="60">
+                  <div class="media-body ml-3">
+                    <p class="small mb-0 text-primary">{{object.timestamp}}</p>
+                    <h5>{{object.author.user.username}}</h5>
+                    <p class="text-muted text-small mb-2">{{object.overview}}</p><a class="reset-anchor text-small" href="#"><i class="fas fa-share mr-2 text-primary"></i><strong>Reply</strong></a>
+                  </div>
+              {% endfor %}
+                </div>
+              </li>
+            </ul> {% endcomment %}
+          {% comment %} </div> {% endcomment %}
+          
+         
+  {% comment %} <ul class="list-unstyled ml-5">
+                  <li> 
+                    <div class="media mb-4"><img class="rounded-circle shadow-sm img-fluid" src="img/person-2.jpg" alt="" width="60">
+                      <div class="media-body ml-3">
+                        <p class="small mb-0 text-primary">19 Sep 2019</p>
+                        <h5>Melissa Johanson</h5>
+                        <p class="text-muted text-small mb-2">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At.</p><a class="reset-anchor text-small" href="#"><i class="fas fa-share mr-2 text-primary"></i><strong>Reply</strong></a>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <li> {% endcomment %}
+
+ {% comment %} 
+        <form  class="mb-5" action="{% url "post_detail" post.pk  %}" method="post">
+        {% csrf_token %}
+
+        {% for form_field in comment_form  %}
+         <div class="row">
+        <div class="form-group col-lg-6" {%  if form_field.errors %}Invalid{% endif %}>
+            {{form |crispy}}
+            {{form_field.label_tag}}
+            {{ form_field }}
+            {{form_field.errors}}
+        
+        </div>
+        {% endfor  %}
+        {{ comment_form }}
+        <button>Submit your comment</button>
+
+ {% endcomment %}
+
+ 
+{% comment %} 
+             <h2>{{object.title}}</h2> 
+             <p class="mb-4">{{object.overview}}</p>  {% endcomment %}
+{% comment %}             
+            <div class="row"> 
+             {% for object  in thumbnail %} 
+              <div class="col-lg-6 mb-4"><a class="d-block" href="img/post-demo-1.jpg" data-lightbox="post-images" title="Image one"><img class="img-fluid img-thumbnail" src="{{object.thumbnail.url}}" alt=""></a></div>  
+
+              {% endfor %}  {% endcomment %}
+               {% comment %} <div class="col-lg-6 mb-4"><a class="d-block" href="img/post-demo-2.jpg" data-lightbox="post-images" title="Image two"><img class="img-fluid img-thumbnail" src="img/post-demo-2.jpg" alt=""></a></div> 
+            </div> 
+            <p class="text-muted mb-4">{{object.overview}}</p>
+            <h3>{{object.title}}</h3>  {% endcomment %}
+        {% comment %} <div class="col-lg-6 mx-auto text-center">
+            <ul class="list-inline">
+            {% for cat in object.categories.all %}
+              <li class="list-inline-item mr-3"><a class="category-link font-weight-normal" href="#">{{cat}}</a></li>
+      {% endcomment %}
+
+{% comment %} 
+            <div class="d-flex align-items-center flex-column flex-sm-row mb-4 p-4 bg-light">
+              <h3 class="h4 mb-3 mb-sm-0">Categories</h3>
+              <ul class="list-inline mb-0 ml-0 ml-sm-3">
+               {% for li in lists %}
+                <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#"></a>{{li}}</li>
+               {% endfor %}
+              </ul> {% endcomment %}
+
+          <!-- Categories-->
+            {% comment %} <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+
+                <h2 class="h5 mb-3">Trending categories</h2>
+                {% for cat in object.categories.all %}
+                <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url{% static "(img/category-bg-1.jpg)" %}" href="#"><span class="category-block-title">{{cat}}</span></a>
+                {% endfor %}
+
+                
+              </div>
+            </div> {% endcomment %}
+
+              
+            {% comment %} <!-- Categories-->
+             <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+                <h2 class="h5 mb-3">Trending categories</h2>
+                  <ul class="list-inline mb-0 ml-0 ml-sm-3">
+               {% for li in lists %}
+                <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#"></a>{{li}}</li>
+               {% endfor %}
+
+               </ul>  {% endcomment %}
+
+              {% comment %} {% for cat  in categories %}
+                <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url  "(/static/img/category-bg-1.jpg)"  href="#"><span class="category-block-title">{{cat}}</span></a>
+              {% endfor %} 
+                {% endcomment %}
+
+             {% comment %} <ul class="list-bullets mb-5">
+            {% for li in lists %}
+              <li>{{li}}</li>
+            {% endfor %}  {% endcomment %}
+
+            
+{% comment %} 
+            <br>
+            <br>  {% endcomment %}
+              {% comment %} <li>Inventore magni sed error dignissimos repudiandae.</li>
+              <li>Aperiam cum, nisi sed aliquam soluta amet molestiae.</li>
+              <li>Consequatur sequi dolore, doloribus officia Nihil fugit.</li> {% endcomment %}
+            {% comment %} </ul> {% endcomment %}
+            {% comment %} {% for object in quote   %}
+            <blockquote class="blockquote bg-light p-4 p-lg-5 text-center mb-5">
+              <p class="h4 mb-4">{{object.quotes}}</p>
+            {% endfor %}
+              <footer class="blockquote-footer">
+            {% for object in quote_by  %} 
+                <cite title="Source Title">{{object.quote_by}}</cite>
+            {% endfor %}
+              </footer>
+            </blockquote> {% endcomment %}
+            {% comment %} <p class="mb-5">{{object.overview}} </p> {% endcomment %}
+             
+
+  {% comment %} <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Events</a></li>
+                <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Make up</a></li>
+                <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Design</a></li> {% endcomment %}
+
+   {% comment %} <li class="list-inline-item mr-1 my-1"><a class="social-link-share twitter" href="#"><i class="fab fa-twitter mr-2"></i>Tweet</a></li>
+                <li class="list-inline-item mr-1 my-1"><a class="social-link-share instagram" href="#"><i class="fab fa-instagram mr-2"></i>Share</a></li> {% endcomment %}
+
+
+                  {% comment %} <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Events</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Make up</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Design</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Fashion</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Inspiration</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Business</a></li> {% endcomment %}
+               
+
+
+{% comment %} 
+                <div class="media mb-3"><a class="d-block" href="post.html"><img class="img-fluid" src="img/recent-post-2.jpg" alt="" width="70"></a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="post.html">Black hat</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  </div>
+                </div>
+                <div class="media mb-3"><a class="d-block" href="post.html"><img class="img-fluid" src="img/recent-post-3.jpg" alt="" width="70"></a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="post.html">My office makeover</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  </div>
+                </div></div> {% endcomment %}
+              
+{% comment %}             
+            <!-- Categories-->
+             <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+                <h2 class="h5 mb-3">Trending categories</h2>
+              {% for cat  in object.categories.all %}
+                <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url  "(/static/img/category-bg-1.jpg)"  href="#"><span class="category-block-title">{{cat}}</span></a>
+              {% endfor %}  {% endcomment %}
+               
+
+                  {% comment %} <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url "(/static/img/category-bg-2.jpg)" href="#"><span class="category-block-title">{{cat}}</span></a><a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url "(/static/img/category-bg-3.jpg)" href="#"><span class="category-block-title">{{cat}}</span></a>   {% endcomment %}
+
+              
+{% comment %}                 
+              </div>
+            </div> {% endcomment %}

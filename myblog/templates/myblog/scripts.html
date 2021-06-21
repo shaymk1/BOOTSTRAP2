@@ -1,0 +1,19 @@
+{% load static %}
+{% block content %}
+
+
+<!-- JavaScript files-->
+    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static "vendor/lightbox2/js/lightbox.min.js" %}"></script>
+    <script src="{% static "js/front.js" %}"></script>
+
+    <!-- tinymce scripts files-->
+
+     <script src="{% static "js/highlight.pack.js" %}"></script>
+     <script>hljs.initHighlightingOnLoad();</script>
+
+
+    <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+{% endblock  %}

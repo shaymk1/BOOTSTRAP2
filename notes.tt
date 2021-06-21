@@ -1,0 +1,82 @@
+tinymce :
+
+> pip3 install django-tinymce4-lite
+> add 'tinymce' in installed apps
+> add some stuff in settings.py:
+   #for media:
+
+   STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")
+   MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
+
+   #general settings:
+
+   
+
+TINYMCE_DEFAULT_CONFIG = {
+    # 'height': 360,
+    # 'width': 1120,
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'theme': 'modern',
+    'plugins': '''
+            textcolor save link image media preview codesample contextmenu
+            table code lists fullscreen  insertdatetime  nonbreaking
+            contextmenu directionality searchreplace wordcount visualblocks
+            visualchars code fullscreen autolink lists  charmap print  hr
+            anchor pagebreak
+            ''',
+    'toolbar1': '''
+            fullscreen preview bold italic underline | fontselect,
+            fontsizeselect  | forecolor backcolor | alignleft alignright |
+            aligncenter alignjustify | indent outdent | bullist numlist table |
+            | link image media | codesample |
+            ''',
+    'toolbar2': '''
+            visualblocks visualchars |
+            charmap hr pagebreak nonbreaking anchor |  code |
+            ''',
+    'contextmenu': 'formats | link image',
+    'menubar': True,
+    'statusbar': True,
+}
+
+     
+
+
+
+> go to github and get github.css and highlight.pack.js
+> add <script>hljs.initHighlightingOnLoad();</script> to your scripts
+> in forms.py add this:
+
+   class TinyMCEWidget(TinyMCE):
+    def use_required_attribute(self, *args):
+        return False
+
+
+class PostForm(forms.ModelForm):
+    content = forms.CharField(
+        widget=TinyMCEWidget(
+            attrs={'required': False, 'cols': 30, 'rows': 10}
+        )
+    )
+
+    class Meta:
+        model = Post
+        fields = ('title', 'overview', 'content', 'thumbnail',
+                  'categories', 'featured', 'previous_post', 'next_post')
+
+
+
+#post.html
+
+> so what you need to do here:
+
+   > images for authors
+   > pagination
+   > Tags
+#home.html
+
+   > categories
+   > pagination
+   > tags

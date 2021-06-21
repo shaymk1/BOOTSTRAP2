@@ -1,0 +1,246 @@
+{% extends 'myblog/base.html' %}
+{% load static %}
+{% block content %}
+
+
+           
+
+    <section class="py-5">
+      <div class="container py-4">
+        <div class="row">
+          <!-- Blog listing-->
+           {{post.content | safe}} 
+          <div class="col-lg-9 mb-5 mb-lg-0">
+            <div class="row">
+
+            {% for object  in post_list  %}
+              <div class="col-lg-6 mb-5"><a class="d-block post-trending mb-4" href="{{object.get_absolute_url}}"><img class="img-fluid w-100" src="{{object.thumbnail.url}}" alt=""/></a>
+                <ul class="list-inline">
+
+                {% for cat in object.categories.all %}
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">{{cat}}</a></li>
+                {% endfor %}
+
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">{{post.author.user.username}}</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">{{object.timestamp|timesince}} ago</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="{{object.get_absolute_url}}">{{object.title}}</a></h2>
+                <p class="text-muted">{{object.overview}}</p><a class="btn btn-link p-0 read-more-btn" href="{% url "posts" %}"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+
+              {% comment %} {% url "post_detail" %} {% endcomment %}
+
+            {% endfor %}
+           
+            
+
+            <!-- Pagination-->
+            <div>
+             <nav aria-label="Page navigation example">
+              <ul class="pagination">
+
+               <!-- start Previous page-->
+                <li class="page-item">
+                {% comment %} {% if post.previous_post %} {% endcomment %}
+                 {% if queryset.has_previous %}   
+                <a class="page-link" href="?{{ page_request_var }}={{ queryset.previous_page_number }}">&laquo;
+                <div class="text"><strong class="text-primary">Previous Post </strong>
+                <h6>{{post.previous_post.title}}</h6>
+                </div>
+               </a>
+              {% endif %}
+              </li>
+            <!-- end Previous page-->
+
+
+              <!-- start current Page-->
+              <li class="page-item">
+              <a href="?{{ page_request_var }}={{ queryset.number }}" class="page-link active">
+              {{queryset.number}}
+              </a>
+            </li>
+            <!-- end current Page-->
+
+              
+              <!--start next post-->
+             
+               <li class="page-item">
+               {% comment %} {% if post.next_post %} {% endcomment %}
+               {% if queryset.has_next %}
+                <a class="page-link" href="?{{ page_request_var }}={{ queryset.next_page_number }}">&raquo;
+                <div class="text"><strong class="text-primary">Next Post </strong>
+                <h6>{{post.next_post.title}}</h6>
+                </div>
+                </a>
+              {% endif %}
+              </li>
+            <!-- end next post-->
+
+                {% comment %} <li class="page-item">
+              {% if post.previous_post %}
+                <a class="page-link" href="#">2</a>
+                </li> 
+             
+                <li class="page-item"><a class="page-link" href="{{post.previous_post.get_absolute_url}}">&raquo;</a>
+                </li>
+              {% endif %} {% endcomment %}
+              </ul>
+            </nav>
+          </div> 
+          <!-- Blog sidebar-->
+          <div class="col-lg-3">
+            <!-- About category-->
+            <div class="card rounded-0 border-0 bg-light mb-4 py-lg-4">
+              <div class="card-body text-center">
+              {% for object  in post_list  %}
+
+                <h2 class="h3 mb-3">{{object.author.user.username}}</h2><img class="rounded-circle mb-3" src="{{object.author.profile_pic.url}}" alt="..." width="100">
+                <p class="text-small text-muted">{{object.overview}}</p>
+
+              {% endfor %}
+
+                <ul class="list-inline small mb-0 text-dark">
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-facebook-f"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-twitter"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-instagram"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-linkedin"></i></a></li>
+                  <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-youtube"></i></a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Recent posts-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+            {% for object in post_list %}
+              
+              
+                <h2 class="h5 mb-3">{{object.title}}</h2>
+                <div class="media mb-3"><a class="d-block" href="{{object.get_absolute_url}}"><img class="img-fluid" src="img/recent-post-1.jpg" alt="" width="70">
+                </a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="{{object.get_absolute_url}}">{{object.title}}</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">{{object.overview}}</p>
+                  </div>
+                </div>
+
+            {% endfor %}
+              
+              </div>
+            </div>
+
+            <!-- Categories-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+            {% for cat in categories %}
+                <h2 class="h5 mb-3">{{object.title}}</h2>
+                <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url (/static/img/category-bg-1.jpg)"  href="#"><span class="category-block-title">{{cat}}</span></a>
+
+            {% endfor %}
+
+
+            
+
+                {% comment %} <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url(img/category-bg-2.jpg)" href="#"><span class="category-block-title">Fashion</span></a>
+
+                <a class="category-block category-block-sm bg-center bg-cover mb-2" style="background: url(img/category-bg-3.jpg)" href="#"><span class="category-block-title">Tips &amp; Tricks</span></a>
+              </div>
+            </div> {% endcomment %}
+
+            <!-- Tags-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0">
+              
+              
+              
+                <h2 class="h5 mb-3">{{object.title}}</h2>
+                <ul class="list-inline">
+                  {% for tag in tags   %}
+                    <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">{{tag}}</a>
+                    </li>
+                  {% endfor %}
+
+                  {% comment %} <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Events</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Make up</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Design</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Fashion</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Inspiration</a></li>
+                  <li class="list-inline-item my-1 mr-2"><a class="sidebar-tag-link" href="#">Business</a></li> {% endcomment %}
+                </ul>
+              </div>
+            </div>
+            <!-- Ad-->
+            <div class="card rounded-0 border-0 mb-4">
+              <div class="card-body p-0"><a class="d-block" href="#"><img class="img-fluid" src="{% static "img/banner.jpg" %}" alt=""></a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+{% endblock %}
+
+       {% comment %} <div class="media mb-3"><a class="d-block" href="post.html"><img class="img-fluid" src="img/recent-post-2.jpg" alt="" width="70"></a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="post.html">Black hat</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  </div>
+                </div> {% endcomment %}
+                
+                {% comment %} <div class="media mb-3"><a class="d-block" href="post.html"><img class="img-fluid" src="img/recent-post-3.jpg" alt="" width="70"></a>
+                  <div class="media-body ml-3">
+                    <h6> <a class="reset-anchor" href="post.html">My office makeover</a></h6>
+                    <p class="text-small text-muted line-height-sm mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  </div>
+                </div>
+ {% endcomment %}
+
+              {% comment %} <div class="col-lg-6 mb-5">   <a class="d-block post-trending mb-4" href="post.html"><img class="img-fluid w-100" src="img/post-img-2.jpg" alt=""/></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">Sports</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">John Smith</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">15 Sep 2020</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="post.html">Yoga Recipes You Need to Make them</a></h2>
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><a class="btn btn-link p-0 read-more-btn" href="post.html"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+
+              <div class="col-lg-6 mb-5">   <a class="d-block post-trending mb-4" href="post.html"><img class="img-fluid w-100" src="img/post-img-3.jpg" alt=""/></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">Design</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">John Smith</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">15 Sep 2020</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="post.html">Scandinavian Design Meets Californian Styling</a></h2>
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><a class="btn btn-link p-0 read-more-btn" href="post.html"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+
+              <div class="col-lg-6 mb-5">   <a class="d-block mb-4" href="post.html"><img class="img-fluid w-100" src="img/post-img-4.jpg" alt=""/></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">Entertainment</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">John Smith</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">15 Sep 2020</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="post.html">The Great Revival of Dance &amp; Song in South Greenwich</a></h2>
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><a class="btn btn-link p-0 read-more-btn" href="post.html"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+
+              <div class="col-lg-6 mb-5">   <a class="d-block mb-4" href="post.html"><img class="img-fluid w-100" src="img/post-img-5.jpg" alt=""/></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">Fashoin</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">John Smith</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">15 Sep 2020</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="post.html">Las Palmas Cafe Revolutionizes Los Angeles Brunch Scene</a></h2>
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><a class="btn btn-link p-0 read-more-btn" href="post.html"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+
+
+              <div class="col-lg-6 mb-5">   <a class="d-block mb-4" href="post.html"><img class="img-fluid w-100" src="img/post-img-6.jpg" alt=""/></a>
+                <ul class="list-inline">
+                  <li class="list-inline-item mr-2"><a class="category-link font-weight-normal" href="#">Design</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">John Smith</a></li>
+                  <li class="list-inline-item mx-2"><a class="text-uppercase meta-link font-weight-normal" href="#">15 Sep 2020</a></li>
+                </ul>
+                <h2 class="h3 mb-4"> <a class="d-block reset-anchor" href="post.html">Retro Meets Boho in Ada Kressi’s Austin Loft</a></h2>
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p><a class="btn btn-link p-0 read-more-btn" href="post.html"><span>Read more</span><i class="fas fa-long-arrow-alt-right"></i></a>
+              </div>
+            </div> {% endcomment %}
